@@ -6,6 +6,10 @@ const port = 8080;
 
 app.use(bodyParser.json());
 
+app.get("/", (_, res) => {
+  return res.send("health check");
+});
+
 app.post('/replace', (req, res) => {
     try {
         const inputText = req.body.inputText;

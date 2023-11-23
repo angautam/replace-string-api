@@ -32,13 +32,13 @@ jobs:
 
       # Login to ECR Repository
     - name: Login to Amazon ECR
-      if: github.ref == 'refs/heads/development' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
      
       # Build and push docker image to ECR
     - name: Build, tag, and push image to Amazon ECR
-      if: github.ref == 'refs/heads/development' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: string-tmml-api
@@ -57,6 +57,7 @@ jobs:
       run: |
         sed -i "s/IMAGE_TAG/${{ env.BUILD_VERSION }}/g" infra/terraform/modules/helmdeploy/string-tmnl/values.yaml
         sed -i "s/APP_VERSION/${{ env.BUILD_VERSION }}/g" infra/terraform/modules/helmdeploy/string-tmnl/Chart.yaml
+        sed -i "s/IMAGE_TAG/${{ env.BUILD_VERSION }}/g" infra/terraform/main.tf
         terraform -chdir=infra/terraform fmt -check
 
     # Does an initialization of Terraform
@@ -82,5 +83,5 @@ jobs:
     
     # This is a final deployment with auto approve
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/development' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform -chdir=infra/terraform apply -auto-approve

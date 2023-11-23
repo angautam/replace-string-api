@@ -7,3 +7,8 @@ variable "app_version" {
 variable "ingress_hosts" {
   default = null
 }
+
+variable "ecr_repo" {}
+variable "eks_cluster" {}
+
+variable "cert_arn" {}

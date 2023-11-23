@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: 401326327312.dkr.ecr.us-east-1.amazonaws.com/string-tmml-api
+  repository: ''
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: IMAGE_TAG
 
 imagePullSecrets: []
 nameOverride: ""
@@ -37,21 +37,23 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/certificate-arn: ''
   hosts:
-    - host: chart-example.local
+    - host:
       paths:
         - path: /
-          pathType: ImplementationSpecific
-  tls: []
+          pathType: Prefix
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local

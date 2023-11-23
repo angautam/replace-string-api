@@ -1,7 +1,13 @@
 data "aws_region" "current" {}
 
+data "aws_caller_identity" "current" {}
+
+data "aws_ecr_repository" "service" {
+  name = var.ecr_repo
+}
+
 data "aws_eks_cluster" "cluster" {
-  name = "testeks"
+  name = var.eks_cluster
 }
 
 provider "helm" {
@@ -25,9 +31,15 @@ resource "helm_release" "this" {
     "${file("${path.module}/string-tmnl/values.yaml")}"
   ]
   set {
-    name  = "ingress.hosts[0].host"
-    value = var.ingress_hosts
+    name  = "ingress.annotations.alb\\.ingress\\.kubernetes\\.io/certificate-arn"
+    value = var.cert_arn
+    type  = "string"
   }
+  set {
+    name  = "image.repository"
+    value = data.aws_ecr_repository.service.repository_url
+  }
+
 }
 
 
