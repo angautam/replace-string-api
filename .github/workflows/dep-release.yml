@@ -35,6 +35,8 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+      with:
+        mask-password: true
      
       # Build and push docker image to ECR
     - name: Build, tag, and push image to Amazon ECR
